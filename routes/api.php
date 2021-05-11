@@ -57,6 +57,7 @@ Route::delete('School/deleteData', [SchoolController::class, 'delete']);
 
 Route::post('GroupSetup', [GroupSetupController::class, 'index']);
 Route::post('GroupSetup/modalDataPut', [GroupSetupController::class, 'shows']);
+Route::post('GroupSetup/setup', [GroupSetupController::class, 'setup']);
 Route::post('GroupSetup/createData', [GroupSetupController::class, 'create']);
 Route::put('GroupSetup/createData', [GroupSetupController::class, 'update']);
 Route::delete('GroupSetup/deleteData', [GroupSetupController::class, 'delete']);
