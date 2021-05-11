@@ -63,8 +63,8 @@ class BookController extends Controller
             'genre__id' => $json['txtinput[74]'],
             'release_year' => $json['txtinput[75]'],
             'description' => $json['txtinput[76]'],
-            'created_by' => $json['txtinput[77]'],
-            'created_date' => date('Y-m-d H:i:s')
+            'modified_by' => $json['txtinput[77]'],
+            'modified_date' => date('Y-m-d H:i:s')
         ];
 
         $return_value = $model->insert($data, array('id' => $json['txtinput[70]']));

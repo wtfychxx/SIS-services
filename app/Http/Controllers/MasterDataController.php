@@ -109,7 +109,7 @@ class MasterDataController extends Controller
 
         }
 
-        return response($retuur_value, $return_value['code']);
+        return response($return_value, $return_value['code']);
     }
 
     public function update(Request $request){

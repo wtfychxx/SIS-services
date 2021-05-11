@@ -34,7 +34,16 @@ class GroupSetupController extends Controller
         $json = json_decode($request->getContent(), true);
 
         $model = new GroupSetupModel;
-
         
+    }
+
+    public function setup(Request $request){
+        $json = json_decode($request->getContent(), true);
+
+        $model = new GroupSetupModel;
+
+        $return_value = $model->setup($json['school_id'], array('id' => $json['id']));
+
+        return response($return_value, $return_value['code']);
     }
 }

@@ -16,7 +16,14 @@ class BookModel extends Model
 
     public function get(){
         try{
+            $rawQuery = "id,
+                            number,
+                            title,
+                            release_year,
+                            author,
+                            fn_sis_master_data_get_name(10, genre__id, 1) as genre";
             $data = DB::table($this->table)
+                        ->select(DB::raw($rawQuery))
                         ->get();
 
             if($data->count() > 0){
@@ -46,12 +53,7 @@ class BookModel extends Model
 
     public function put($prm_where = array()){
         try{
-            $rawQuery = "id,
-                            title,
-                            release_year,
-                            author";
             $query = DB::table($this->table)
-                            ->select(DB::raw($rawQuery))
                             ->where($prm_where)
                             ->first();
 

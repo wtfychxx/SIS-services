@@ -49,11 +49,11 @@ class MasterOptionModel extends Model
                             $table['name'] = $prm_module_table." a join ci_sis_master_data b on b.id = a.area_type__id";
                             $table['fields']['name'] = "a.id combo_key,
                                                             case b.id
-                                                            when 14 then name
-                                                            when 15 then concat('-', name)
-                                                            when 16 then concat('--', name)
-                                                            when 17 then concat('---', name)
-                                                            when 18 then concat('----', name)
+                                                            when 15 then name
+                                                            when 16 then concat('-', name)
+                                                            when 17 then concat('--', name)
+                                                            when 18 then concat('---', name)
+                                                            when 19 then concat('----', name)
                                                             end as combo_name";
                             $table['where'] = "WHERE b.module_table__id = 6";
                         }else{
@@ -119,22 +119,30 @@ class MasterOptionModel extends Model
         try{
             $result = '';
             switch($prm_type){
-                case 'book_number':
-                    $date = date('Y-m-d');
-                    $get_book_count = DB::table($prm_table)
-                                            ->where(DB::raw("to_char(created_date, 'YYYY-MM-DD') = '$date'"))
-                                            ->count('number');
+                // case 'book_number':
+                //     $date = date('Y-m-d');
+                //     $get_book_count = DB::table($prm_table)
+                //                             ->where(DB::raw("to_char(created_date, 'YYYY-MM-DD') = '$date'"))
+                //                             ->count('number');
                     
-                    $number_result = $get_book_count + 1;
-                    $today_number = str_replace('-', '', $date);
+                //     $number_result = $get_book_count + 1;
+                //     $today_number = str_replace('-', '', $date);
 
-                    if($get_book_count >= 99){
-                        $result = 'B'.$today_number.$number_result;
-                    }else if($get_book_count >= 9 && $get_book_count < 100){
-                        $result = 'B'.$today_number.'0'.$number_result;
-                    }else{
-                        $result = 'B'.$today_number.'00'.$number_result;
-                    }
+                //     if($get_book_count >= 99){
+                //         $result = 'B'.$today_number.$number_result;
+                //     }else if($get_book_count >= 9 && $get_book_count < 100){
+                //         $result = 'B'.$today_number.'0'.$number_result;
+                //     }else{
+                //         $result = 'B'.$today_number.'00'.$number_result;
+                //     }
+                // break;
+                case 'book_number':
+                    $query = DB::table($prm_table)
+                                    ->select(DB::raw("fn_sis_book_number_generate() as number"))
+                                    ->first();
+
+                    $result = $query->number;
+                    
                 break;
             }
 
