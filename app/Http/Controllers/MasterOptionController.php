@@ -13,59 +13,61 @@ class MasterOptionController extends Controller
         $json = json_decode($request->getContent(), true);
 
         $type = $json['type'];
+        $where = (isset($json['where'])) ? $json['where'] : '';
+        $is_array = (isset($json['isarray'])) ? $json['isarray'] : FALSE;
         $model = new MasterOptionModel;
 
         switch($type){
             case 'religion':
-                $data = $model->get_combobox('db', 1);
+                $data = $model->get_combobox('db', 1, $where, $is_array);
             break;
 
             case 'marital_status':
-                $data = $model->get_combobox('db', 2);
+                $data = $model->get_combobox('db', 2, $where, $is_array);
             break;
 
             case 'salutation':
-                $data = $model->get_combobox('db', 3);
+                $data = $model->get_combobox('db', 3, $where, $is_array);
             break;
 
             case 'family_relationship':
-                $data = $model->get_combobox('db', 4);
+                $data = $model->get_combobox('db', 4, $where, $is_array);
             break;
 
             case 'occupation':
-                $data = $model->get_combobox('db', 5);
+                $data = $model->get_combobox('db', 5, $where, $is_array);
             break;
 
             case 'area_type':
-                $data = $model->get_combobox('db', 6);
+                $data = $model->get_combobox('db', 6, $where, $is_array);
             break;
 
             case 'facility':
-                $data = $model->get_combobox('db', 7);
+                $data = $model->get_combobox('db', 7, $where, $is_array);
             break;
 
             case 'education':
-                $data = $model->get_combobox('db', 8);
+                $data = $model->get_combobox('db', 8, $where, $is_array);
             break;
 
             case 'genre':
-                $data = $model->get_combobox('db', 10);
+                $data = $model->get_combobox('db', 10, $where, $is_array);
             break;
 
             case 'majors':
-                $data = $model->get_combobox('db', 11);
+                $data = $model->get_combobox('db', 11, $where, $is_array);
             break;
 
             case 'book':
-                $data = $model->get_combobox('db', 'ci_sis_library_master_book');
+                $data = $model->get_combobox('db', 'ci_sis_library_master_book', $where, $is_array);
             break;
 
             case 'language':
-                $data = $model->get_combobox('db', 'ci_system_language');
+                $data = $model->get_combobox('db', 'ci_system_language', $where, $is_array);
             break;
 
             case 'area':
-                $data = $model->get_combobox('db', 'ci_sis_master_area');
+                $data = $model->get_combobox('db', 'ci_sis_master_area', $where, $is_array);
             break;
 
             case 'country':
@@ -88,6 +90,31 @@ class MasterOptionController extends Controller
                 $data = $model->get_combobox('db', 'ci_sis_organization_school');
             break;
 
+            case 'auth_type':
+                $data = $model->get_combobox('db', 13);
+            break;
+
+            case 'status':
+                $data = [
+                    'status' => 'success',
+                    'code' => 200,
+                    'result' => [
+                        'Active' => 'Active',
+                        'Inactive' => 'Inactive'
+                    ]
+                ];
+            break;
+
+            case 'boolean':
+                $data = [
+                    'status' => 'success',
+                    'code' => 200,
+                    'result' => [
+                        'TRUE' => 'TRUE',
+                        'FALSE' => 'FALSE'
+                    ]
+                ];
+            break;
         }
 
         return response($data);

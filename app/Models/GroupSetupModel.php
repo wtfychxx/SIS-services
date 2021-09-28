@@ -13,13 +13,19 @@ class GroupSetupModel extends Model
 
     protected $table = 'ci_sis_user_group';
 
-    public function put($prm_school = '', $prm_id = array()){
+    function __construct(){
+        parent::__construct();
+
+        $this->menu = array();
+    }
+
+    public function put($prm_school = array(), $prm_id = array()){
         try{
             if(!empty($prm_id)){
                 $check = DB::table($this->table)->where($prm_id)->count();
                 if($check > 0){
                     $query = DB::table($this->table)
-                                    ->select(DB::raw("id, name, status, employee_default"))
+                                    ->select(DB::raw("id, name, status, employee_default, auth_type__id"))
                                     ->where($prm_id)
                                     ->first();
 
@@ -41,6 +47,7 @@ class GroupSetupModel extends Model
             }else{
                 $query = DB::table($this->table)
                             ->select(DB::raw("id, name, status, employee_default"))
+                            ->where($prm_school)
                             ->get();
 
                 if($query->count() > 0){
@@ -69,23 +76,17 @@ class GroupSetupModel extends Model
         return $return_value;
     }
 
-    public function insert($prm_data = array(), $prm_where = array()){
+    public function insert($prm_data = array(), $prm_menus = array(), $prm_where = array()){
         try{
             if(empty($prm_where)){
                 $query = DB::table($this->table)
                                 ->insert($prm_data);
 
-                if($query){
-                    $return_value = [
-                        'js_form_insert',
-                        [
-                            'Successfully Added New Data!',
-                            'ok',
-                            'success'
-                        ],
-                        'code' => 201
-                    ];
-                }
+                $header['ID'] = DB::table($this->table)
+                                ->select(DB::raw("currval('ci_sis_master_data_id_seq') as runid"))->value('runid');
+
+                $message = "Successfully Added New Data!";
+                $code = 201;
             }else{
                 $check = DB::table($this->table)->where($prm_where)->count();
 
@@ -94,17 +95,10 @@ class GroupSetupModel extends Model
                                     ->where($prm_where)
                                     ->update($data);
 
-                    if($query){
-                        $return_value = [
-                            'js_form_update',
-                            [
-                                'Successfully Update the Data!',
-                                'ok',
-                                'success'
-                            ],
-                            'code' => 202
-                        ];
-                    }
+                    $header['ID'] = $prm_where['id'];
+
+                    $message = "Successfully Update the Data!";
+                    $code = 202;
                 }else{
                     $return_value = [
                         'js_form_error',
@@ -116,6 +110,18 @@ class GroupSetupModel extends Model
                         'code' => 200
                     ];
                 }
+            }
+
+            if($query){
+                $return_value = [
+                    'js_form_insert',
+                    [
+                        $message,
+                        'ok',
+                        'success'
+                    ],
+                    'code' => $code
+                ];
             }
         }catch(QueryException $e){
             $return_value = [
@@ -180,7 +186,7 @@ class GroupSetupModel extends Model
         return $return_value;
     }
 
-    public function setup($prm_school_id = '', $prm_id = ''){
+    public function setup(){
         try{
             $rawQuery = "ci_system_menus.id,
                             parent_id,
@@ -220,6 +226,42 @@ class GroupSetupModel extends Model
                     $e->getMessage()
                 ],
                 'code' => 200
+            ];
+        }
+
+        return $return_value;
+    }
+
+    public function getAccess($prm_id = ''){
+        try{
+            $rawQuery = "menus__id,
+                            type,
+                            concat(menus__id, ';', type) as value";
+            $where = ['id' => $prm_id];
+            $query = DB::table($this->table)
+                        ->join('ci_sis_user_group_access', function($join){
+                            $join->on('ci_sis_user_group.id', '=', 'ci_sis_user_group_access.group__id');
+                        })
+                        ->select(DB::raw($rawQuery))
+                        ->where($where)
+                        ->orderBy('menus__id')
+                        ->get();
+
+            $return_value = [
+                'status' => 'success',
+                'result' => $query,
+                'code' => 200
+            ];
+
+        }catch(QueryException $e){
+            $return_value = [
+                'js_form_error',
+                [
+                    'Error when save data to database!',
+                    'error',
+                    'warning',
+                    $e->getMessage()
+                ]
             ];
         }
 
@@ -284,5 +326,48 @@ class GroupSetupModel extends Model
         }
 
         return $data;
+    }
+
+    private function group_access_rights_set($prm_id = '', $prm_menus = array()){
+        $where = ['group__id' => $prm_id];
+        $check = DB::table('ci_sis_user_group_access')
+                    ->where($where)
+                    ->count();
+
+        if($count > 0){
+            DB::table('ci_sis_user_group_access')
+                    ->where($where)
+                    ->delete();
+
+            if(is_array($prm_menus)){
+                foreach($prm_menus as $val){
+                    $access_rights = explode(';', $val);
+                    $this->_menu_parent_get($prm_id, $access_rights[0], $access_rights[1]);
+                }
+
+                DB::table('ci_sis_user_group_access', $this->menu);
+            }
+        }
+    }
+    
+    private function _menu_parent_get($prm_group_id, $prm_id, $prm_access_type){
+        $query = DB::table('ci_system_menus')
+                ->where(['id' => $prm_id]);
+
+        if($query->count() > 0){
+            $result = $query->get();
+
+            if(!array_key_exists($key, $this->menu)){
+                $this->menu[key] = [
+                    'group__id' => $prm_group_id,
+                    'menus__id' => $prm_id,
+                    'type' => $prm_access_type
+                ];
+            }
+
+            if($query->first()->parent_id != 0){
+                $this->_menu_parent_get($prm_group_id, $query->first()->parent_id, 'view');
+            }
+        }
     }
 }

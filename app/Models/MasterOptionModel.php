@@ -11,7 +11,7 @@ class MasterOptionModel extends Model
 {
     use HasFactory;
 
-    public function get_combobox($prm_dbase = 'db', $prm_module_table = '', $prm_where = '', $prm_return_array = TRUE){
+    public function get_combobox($prm_dbase = 'db', $prm_module_table = '', $prm_where = '', $prm_return_array = FALSE){
         try{
             $table = [
                 'name' => '',
@@ -91,11 +91,11 @@ class MasterOptionModel extends Model
 
             $result = array();
             if($prm_return_array){
+                $result = $query;
+            }else{
                 foreach($query as $row){
                     $result[$row->combo_key] = $row->combo_name;
                 }
-            }else{
-                $result = $query;
             }
 
             $return_value = [

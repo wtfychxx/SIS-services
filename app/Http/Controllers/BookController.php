@@ -36,13 +36,13 @@ class BookController extends Controller
         $model = new BookModel;
 
         $data = [
-            'number' => $json['txtinput[71]'],
-            'title' => $json['txtinput[72]'],
-            'author' => $json['txtinput[73]'],
-            'genre__id' => $json['txtinput[74]'],
-            'release_year' => $json['txtinput[75]'],
-            'description' => $json['txtinput[76]'],
-            'created_by' => $json['txtinput[77]'],
+            'number' => $json['bookNumber'],
+            'title' => $json['bookTitle'],
+            'author' => $json['author'],
+            'genre__id' => $json['genre_id'],
+            'release_year' => $json['releaseYear'],
+            'description' => $json['bookDescription'],
+            'created_by' => $json['user_id'],
             'created_date' => date('Y-m-d H:i:s')
         ];
 

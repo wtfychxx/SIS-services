@@ -21,7 +21,8 @@ class BookModel extends Model
                             title,
                             release_year,
                             author,
-                            fn_sis_master_data_get_name(10, genre__id, 1) as genre";
+                            fn_sis_master_data_get_name(10, genre__id, 1) as genre,
+                            genre__id as genre_id";
             $data = DB::table($this->table)
                         ->select(DB::raw($rawQuery))
                         ->get();
