@@ -8,6 +8,8 @@ use App\Http\Controllers\BookController;
 use App\Http\Controllers\MasterOptionController;
 use App\Http\Controllers\SchoolController;
 use App\Http\Controllers\GroupSetupController;
+use App\Http\Controllers\LoginController;
+use App\Http\Controllers\AuthController;
 
 use App\Http\Middleware\CORS;
 
@@ -22,7 +24,15 @@ use App\Http\Middleware\CORS;
 |
 */
 
-Route::post('getCombo', [MasterOptionController::class, 'combo_fill']);
+Route::post('login', [AuthController::class, 'login']);
+Route::group(['prefix' => 'auth', 'middleware' => 'auth:sanctum'], function() {
+    // manggil controller sesuai bawaan laravel 8
+    Route::post('logout', [AuthController::class, 'logout']);
+    // manggil controller dengan mengubah namespace di RouteServiceProvider.php biar bisa kayak versi2 sebelumnya
+    Route::post('logoutall', [AuthController::class, 'logoutall']);
+});
+
+Route::post('getCombo', [MasterOptionController::class, 'combo_fill'])->middleware('auth:sanctum');
 Route::post('generate', [MasterOptionController::class, 'generate']);
 
 Route::post('MasterData', [MasterDataController::class, 'index']);
@@ -63,6 +73,8 @@ Route::post('GroupSetup/createData', [GroupSetupController::class, 'create']);
 Route::put('GroupSetup/createData', [GroupSetupController::class, 'create']);
 Route::delete('GroupSetup/deleteData', [GroupSetupController::class, 'delete']);
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::post('/login', [LoginController::class, 'check'])->middleware('cors');
+
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
