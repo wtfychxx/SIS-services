@@ -17,8 +17,8 @@ class CreatePersonalAccessTokensTable extends Migration
             $table->bigIncrements('id');
             // $table->morphs('tokenable');
             $table->string('tokenable_type');
-            $table->integer('tokenable_id')->unsigned();
-            $table->foreign('tokenable_id')->references('id')->on('users');
+            $table->string('tokenable_id')->unsigned();
+            $table->foreign('tokenable_id')->references('id')->on('ci_system_user');
             // end table morphs
             $table->string('name');
             $table->string('token', 64)->unique();

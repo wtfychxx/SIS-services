@@ -12,13 +12,17 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasApiTokens;
 
-    // protected $table = 'ci_system_user';
+    protected $table = 'ci_system_user';
+    protected $primaryKey = 'id';
+    public $incrementing  = false;
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
+        'id',
+        'alias_user_id',
         'name',
         'email',
         'password',
