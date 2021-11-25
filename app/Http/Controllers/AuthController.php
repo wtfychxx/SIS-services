@@ -9,13 +9,14 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $validate = \Validator::make($request->all(), [
             'email' => 'required',
             'password' => 'required'
         ]);
 
-        if($validate->fails()){
+        if ($validate->fails()) {
             $respon = [
                 'status' => 'errors',
                 'message' => 'Validator Error',
@@ -23,13 +24,13 @@ class AuthController extends Controller
                 'content' => null
             ];
             return response()->json($respon, 200);
-        }else{
+        } else {
             $credentials = request(['email', 'password']);
             $credentials = Arr::add($credentials, 'status', 'active');
             if (!Auth::attempt($credentials)) {
                 $respon = [
                     'status' => 'error',
-                    'message' => 'Unathorized',
+                    'message' => 'Username or Password incorrect!',
                     'errors' => null,
                     'content' => null,
                 ];
@@ -37,7 +38,7 @@ class AuthController extends Controller
             }
 
             $user = User::where('email', $request->email)->first();
-            if (! \Hash::check($request->password, $user->password, [])) {
+            if (!\Hash::check($request->password, $user->password, [])) {
                 throw new \Exception('Error in Login');
             }
 
@@ -56,7 +57,8 @@ class AuthController extends Controller
         }
     }
 
-    public function logout(Request $request) {
+    public function logout(Request $request)
+    {
         $user = $request->user();
         $user->currentAccessToken()->delete();
         $respon = [
@@ -68,7 +70,8 @@ class AuthController extends Controller
         return response()->json($respon, 200);
     }
 
-    public function logoutall(Request $request) {
+    public function logoutall(Request $request)
+    {
         $user = $request->user();
         $user->tokens()->delete();
         $respon = [
